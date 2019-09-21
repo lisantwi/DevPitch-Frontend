@@ -2,6 +2,7 @@ import React from 'react'
 import ProjectDescription from './form/ProjectDescription'
 import ProjectGraphs from './form/ProjectGraphs'
 import ProjectDetails from './form/ProjectDetails'
+require("storm-react-diagrams/dist/style.min.css")
 
 class NewProjectForm extends React.Component{
     state={
