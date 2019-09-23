@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import Select from 'react-select';
 import Lodash from 'lodash';
 import * as SRD from 'storm-react-diagrams'
 
@@ -95,6 +96,7 @@ class ProjectGraphs extends React.Component{
 		event.target.field.forEach(f=> {
 			let i = 1
 			if (f.value !== ""){ 
+				debugger
 				node.addPort(new DefaultPortModel(true, `in-${i}`, `${f.value}`));
 				i++
 			
@@ -120,7 +122,11 @@ onClickNode = (e) => {
 
 
 	render() {
-
+		const options = this.state.nodes.map(v => ({
+			label: v.name,
+			value: v.name
+		  }));
+		  debugger
 		return (
 			
 			<FormStyling>
@@ -182,8 +188,9 @@ onClickNode = (e) => {
 				<div>
 						<label>Add Relationships</label>
 						
-						<select>{this.state.nodes.map((x,y) => <option key={y}>{x}</option>)}</select>;
-
+				<Select
+			options={options}
+			/>
 					</div>
 	
 				</div> 
