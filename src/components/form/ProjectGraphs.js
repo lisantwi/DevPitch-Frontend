@@ -119,14 +119,18 @@ class ProjectGraphs extends React.Component{
 
 	saveImg = (val) => {
 		debugger
-		console.log('saving')
 		const model = this.state.engine.getDiagramModel();
 		let jsonDiagram = JSON.stringify(model.serializeDiagram())
 		debugger
-		this.setState({ 
-			saved: jsonDiagram
+	
+	let svgBlob = new Blob([jsonDiagram], {type: "image/jpeg;charset=utf-8"})
+	let img = URL.createObjectURL(svgBlob);
+	console.log('saving')
+	this.setState({ 
+		saved: img
+})
 
-	})}
+}
 	
 
 
