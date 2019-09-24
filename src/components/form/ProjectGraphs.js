@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import Select from 'react-select';
 import Lodash from 'lodash';
 import * as SRD from 'storm-react-diagrams'
+import Draggable from 'react-draggable'; // The default
 
 import {
 	DiagramWidget,
@@ -59,9 +60,12 @@ class ProjectGraphs extends React.Component{
 	constructor(){
 		super()
 		this.state={
-			nodename: 'Model',
+			nodename: '',
 			hidden: true,
-			nodes: []
+			nodes: {},
+			fields: {},
+			engine: '',
+			saved: ''
 		}
 
 	}
@@ -74,9 +78,7 @@ class ProjectGraphs extends React.Component{
 	
 	handleChange = (e) => {
 		this.setState({
-			nodename: e.target.value
-			
-		})
+			fields:{...this.state.fields, [e.target.name]:e.target.value}})
 	}
 
 	
@@ -93,40 +95,49 @@ class ProjectGraphs extends React.Component{
 		event.preventDefault()
 		let node = null
 		node = new DefaultNodeModel(event.target.modelName.value, 'peru')
-		event.target.field.forEach(f=> {
-			let i = 1
-			if (f.value !== ""){ 
-				debugger
-				node.addPort(new DefaultPortModel(true, `in-${i}`, `${f.value}`));
+		let i = 1
+		let fieldsArr = Object.entries(this.state.fields)
+		fieldsArr.forEach(f=> {
+				node.addPort(new DefaultPortModel(true, `in-${i}`, `${f[1]}`));
+
 				i++
-			
-			}
 		})
 		val.diagramModel.addNode(node)
 		this.forceUpdate();
 		let value = this.state.hidden ? false : true
 		this.setState({
-			nodes: [...this.state.nodes, node],
-			hidden: value
+			nodes: {...this.state.nodes, node},
+			hidden: value,
+			engine: val
 		})
 
 	}
-	
-onClickNode = (e) => {
-	console.log('node')
-}
 
+	addLabel = () => {
+		const node = this.state.nodes[0]
+	}
+
+	saveImg = (val) => {
+		debugger
+		console.log('saving')
+		const model = this.state.engine.getDiagramModel();
+		let jsonDiagram = JSON.stringify(model.serializeDiagram())
+		debugger
+		this.setState({ 
+			saved: jsonDiagram
+
+	})}
+	
 
 
 
 
 
 	render() {
-		const options = this.state.nodes.map(v => ({
-			label: v.name,
-			value: v.name
-		  }));
-		  debugger
+		// const options = this.state.nodes.map(v => ({
+		// 	label: v.name,
+		// 	value: v.name
+		//   }));
 		return (
 			
 			<FormStyling>
@@ -160,10 +171,13 @@ onClickNode = (e) => {
 						this.forceUpdate();
 					}}
 					onDragOver={event => {
-						event.preventDefault();
+				
 					}}
 				>
+
 					<DiagramWidget className='srd-demo-canvas' diagramEngine={this.engine} />
+
+				
 			
 				</div>
 				<div className={this.state.hidden ? 'hidden' : ''}>
@@ -174,11 +188,11 @@ onClickNode = (e) => {
 							 this.createNode(e,val)}
 					}>
 					<label>Change Node Name</label>
-					<input  onChange={this.handleChange} name='modelName' type='text' placeholder='Model Name'/>
-					<input  onChange={this.handleChange} name='field' type='integer' placeholder='Enter field name'/>
-					<input  onChange={this.handleChange} name='field' type='integer' placeholder='Enter field name'/>
-					<input  onChange={this.handleChange} name='field' type='integer' placeholder='Enter field name'/>
-					<input  onChange={this.handleChange} name='field' type='integer' placeholder='Enter field name'/>
+					<input   name='modelName' onChange={this.handleModelName} type='text' placeholder='Model Name'/>
+					<input  onChange={this.handleChange} name='field_1' type='text' placeholder='Enter field name'/>
+					<input  onChange={this.handleChange} name='field_2' type='text' placeholder='Enter field name'/>
+					<input  onChange={this.handleChange} name='field_3' type='text' placeholder='Enter field name'/>
+					<input  onChange={this.handleChange} name='field_4' type='text' placeholder='Enter field name'/>
 					<button type='submit' >Create Node</button>
 					<br/><br/>
 					
@@ -187,11 +201,17 @@ onClickNode = (e) => {
 				</div>
 				<div>
 						<label>Add Relationships</label>
+						<Draggable>
+						<button onClick={this.addLabel}>Has many</button>
+						</Draggable>
+						<button onClick={()=>this.saveImg(this.engine)}>Save</button>
+					
 						
-				<Select
+				{/* <Select
 			options={options}
-			/>
+			/> */}
 					</div>
+					{this.state.saved ? <img src={this.state.saved}/> : null}
 	
 				</div> 
 				</FormStyling>
