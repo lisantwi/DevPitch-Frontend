@@ -1,3 +1,4 @@
+
 .App {
   text-align: center;
 }
@@ -36,11 +37,12 @@
 
 .srd-demo-canvas {
   height: 50vh;
-  width: 80vh;
+  width: 120vh;
+  
   
   
   background-color: rgb(60,60,60);
- margin: 50px;
+ margin: 0 auto;
 }
 
 .storm-diagrams-canvas {

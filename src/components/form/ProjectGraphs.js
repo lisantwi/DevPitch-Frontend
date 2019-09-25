@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { isValidElement } from 'react'
 import styled from 'styled-components'
-import Select from 'react-select';
-import Lodash from 'lodash';
-import * as SRD from 'storm-react-diagrams'
+import {Form, Button, Select} from 'semantic-ui-react'
+import html2canvas from 'html2canvas';
+
 import Draggable from 'react-draggable'; // The default
 
 import {
@@ -13,8 +13,7 @@ import {
 	DefaultNodeModel,
 	DefaultPortModel
 } from 'storm-react-diagrams';
-import TrayWidget from './TrayWidget';
-import TrayItemWidget from './TrayItemWidget';
+
 
 
 const FormStyling = styled.div`
@@ -23,35 +22,38 @@ const FormStyling = styled.div`
 	}
 	.hidden{
 		display: none;
+		margin-top:30px;
+		padding-left: 20px;
+		padding-right:20px
+	}
+	.title{
+		text-align: center
+		padding-top: 30px;
+	}
+
+	.addButton{
+		margin-left: 0 auto;
+	}
+
+	.content{
+		margin: 0;
+		padding: 0;
+	}
+
+	.diagram-layer{
+		margin:auto;
+	}
+	.relationshipDiv{
+		border: outset #f33;
+		padding-right:30px
+		padding-left:30px
+		display:inline
+		color:red
 	}
 
 	
 
 `
-var engine = new SRD.DiagramEngine();
-engine.installDefaultFactories();
-
-// 2) setup the diagram model
-var model = new SRD.DiagramModel();
-
-// 3) create a default node
-var node1 = new SRD.DefaultNodeModel("Node 1", "rgb(0,192,255)");
-let port1 = node1.addOutPort("Out");
-node1.setPosition(100, 100);
-
-// 4) create another default node
-var node2 = new SRD.DefaultNodeModel("Node 2", "rgb(192,255,0)");
-let port2 = node2.addInPort("In");
-node2.setPosition(400, 100);
-
-// 5) link the ports
-let link1 = port1.link(port2);
-
-// 6) add the models to the root graph
-model.addAll(node1, node2, link1);
-
-// 7) load model into engine
-engine.setDiagramModel(model);
 
 
 
@@ -65,7 +67,8 @@ class ProjectGraphs extends React.Component{
 			nodes: {},
 			fields: {},
 			engine: '',
-			saved: ''
+			saved: '',
+			relationship:''
 		}
 
 	}
@@ -113,31 +116,47 @@ class ProjectGraphs extends React.Component{
 
 	}
 
-	addLabel = () => {
-		const node = this.state.nodes[0]
-	}
-
-	saveImg = (val) => {
-		debugger
-		const model = this.state.engine.getDiagramModel();
-		let jsonDiagram = JSON.stringify(model.serializeDiagram())
-		debugger
 	
-	let svgBlob = new Blob([jsonDiagram], {type: "image/jpeg;charset=utf-8"})
-	let img = URL.createObjectURL(svgBlob);
-	console.log('saving')
-	this.setState({ 
-		saved: img
-})
 
+	saveImg = () => {	
+			html2canvas(document.querySelector(".diagram-layer")).then(canvas => {
+				let imgUrl = canvas.toDataURL("image/png")
+				this.setState({
+					saved: imgUrl
+				})
+			});
+			this.props.addImg(this.state.saved)
+}
+	
+duplicateDiv = () => {
+	let div=''
+	const {relationship} = this.state
+	switch(relationship) {
+		case 'One-to-One':
+		div = <Draggable><div className="ui yellow label">One-to-One</div></Draggable>	
+		  break;
+		case 'Many-to-Many':
+			div = <Draggable><div className="ui green label">Many-to-Many</div></Draggable>
+		  break;
+		  case 'One-to-Many':
+			div = <Draggable><div className="ui green label">One-to-Many</div></Draggable>
+		  break;
+	  } 
+	  return div
+}
+
+handleSelectChange = (e) => {
+	this.setState({
+		relationship: e.target.textContent
+	})
 }
 	
 
 
 
 
-
 	render() {
+		const options = [{key: 'One-to-Many', value: 'One-to-Many', text:'One-to-Many' },{key: 'Many-to-Many', value: 'Many-to-Many', text:'Many-to-Many'},{key: 'One-to-One', value: 'One-to-One', text: 'One-to-One'}] 
 		// const options = this.state.nodes.map(v => ({
 		// 	label: v.name,
 		// 	value: v.name
@@ -146,13 +165,13 @@ class ProjectGraphs extends React.Component{
 			
 			<FormStyling>
  		
-			 <div className="content">
+			 <div className="title">
+			<div >
+			<h1 >Define Your Data Models</h1>
+	
+	<Button onClick= {this.handleClick}>Add A New Model</Button>
+			</div>
 			
-				<TrayWidget>
-					<TrayItemWidget  model={{ type: 'in' }} name="Test" color="peru" />
-					<TrayItemWidget model={{ type: 'out' }} name="Test" color="hotpink" />
-				</TrayWidget>
-				<button onClick= {this.handleClick}>Add new Node</button>
 				<div 
 				onClick={this.onClickNode}
 					className="diagram-layer"
@@ -178,7 +197,8 @@ class ProjectGraphs extends React.Component{
 				
 					}}
 				>
-
+					<br/>
+						<br/>
 					<DiagramWidget className='srd-demo-canvas' diagramEngine={this.engine} />
 
 				
@@ -186,36 +206,62 @@ class ProjectGraphs extends React.Component{
 				</div>
 				<div className={this.state.hidden ? 'hidden' : ''}>
 
-					<form onSubmit={
+					<Form size='big'onSubmit={
 						e => {
 							let val = this.engine
 							 this.createNode(e,val)}
 					}>
-					<label>Change Node Name</label>
-					<input   name='modelName' onChange={this.handleModelName} type='text' placeholder='Model Name'/>
-					<input  onChange={this.handleChange} name='field_1' type='text' placeholder='Enter field name'/>
-					<input  onChange={this.handleChange} name='field_2' type='text' placeholder='Enter field name'/>
-					<input  onChange={this.handleChange} name='field_3' type='text' placeholder='Enter field name'/>
-					<input  onChange={this.handleChange} name='field_4' type='text' placeholder='Enter field name'/>
-					<button type='submit' >Create Node</button>
+						<Form.Field>
+							<br/>	<br/>
+						<label>Add New Model</label>
+						<br/>	<br/>
+						<input   name='modelName' onChange={this.handleModelName} type='text' placeholder='Model Name' width={8}/>
+						</Form.Field>
+						<br/>	<br/>
+					<div className="three fields">
+						<div className='field'>
+								
+					<input  onChange={this.handleChange} name='field_1' type='text' placeholder='Enter field name'  />
+						</div>
+						<div className='field'>
+						<input  onChange={this.handleChange} name='field_2' type='text' placeholder='Enter field name' />
+						</div>
+						<div className='field'>
+						<input  onChange={this.handleChange} name='field_3' type='text' placeholder='Enter field name' />
+						</div>
+						<div className='field'>
+						<input  onChange={this.handleChange} name='field_4' type='text' placeholder='Enter field name'  />
+						</div>
+				
+					</div>
+					<Button type='submit' >Save</Button>
 					<br/><br/>
 					
-					</form>
+					</Form>
 				
 				</div>
 				<div>
 						<label>Add Relationships</label>
-						<Draggable>
-						<button onClick={this.addLabel}>Has many</button>
-						</Draggable>
-						<button onClick={()=>this.saveImg(this.engine)}>Save</button>
+						<Select onChange={this.handleSelectChange} placeholder='Add your relationships' options={options} />
+					
+		
+						<div >
+			
+							{this.state.relationship ? this.duplicateDiv() : null}
+				
+				
+					
+						</div>
+				
+				<br/><br/>
+						<Button onClick={()=>this.saveImg(this.engine)}>Save &amp; Continue</Button>
 					
 						
 				{/* <Select
 			options={options}
 			/> */}
 					</div>
-					{this.state.saved ? <img src={this.state.saved}/> : null}
+			
 	
 				</div> 
 				</FormStyling>

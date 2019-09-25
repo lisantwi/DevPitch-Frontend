@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Redirect, Switch} from "react-router-dom";
+import { Route, Redirect, Switch, withRouter} from "react-router-dom";
 import NavBar from './components/NavBar'
 import LoginForm from './components/LoginForm'
 import SignUpForm from './components/SignUpForm'
@@ -14,12 +14,14 @@ import './App.css';
 
 
 class App extends React.Component{
-  constructor(){
-    super()
+  constructor(props){
+    super(props)
     this.state = {
       username: '',
       password: '',
-      user: {}
+      user: {projects:
+      []},
+      projects: []
     }
   }
 
@@ -28,6 +30,8 @@ class App extends React.Component{
         [e.target.name]: e.target.value
     })
 }
+
+
 
 handleLogin = (e, eType) => {
   e.preventDefault()
@@ -48,23 +52,53 @@ handleLogin = (e, eType) => {
   .then(data =>{
       if(data.jwt){
         localStorage.setItem("token", data.jwt)
-        debugger
-        this.updateUser(data.user)
       } else{
         eType === 'login' ? alert("Incorrect username or password") : alert("This username is already associated with an account")
       }
   })
+  debugger
+  this.props.history.push('/profile')
+
 }
 
-updateUser = (user_data)=> {
-    this.setState({
-      user: {user_data},
-      username: '',
-      password: ''
-    })
-// Function doesn't fully erase username state. (ATTENTION)
- 
+
+componentDidMount(){
+  if (localStorage.getItem('token') !== null
+  ) {
+    fetch('http://localhost:3000/api/v1/users',{
+      headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+  })
+  .then(resp => resp.json())
+  .then(user => {
+      this.setState({
+         user: user
+      })
+  })  
 }
+  }
+
+
+createProject = (description) => {
+  fetch('http://localhost:3000/api/v1/projects', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+    },
+    body: JSON.stringify({
+      description: description
+    })
+}).then(resp => resp.json())
+.then(data => {
+    this.setState({
+     projects: [...this.state.projects, data]
+    })
+})
+  
+}
+
 
 
 
@@ -76,18 +110,18 @@ handleLogout = () => {
 
 }
   render(){
-    const {handleChange, handleLogin, handleLogout} = this
+    const {handleChange, handleLogin, handleLogout, getProjects} = this
     const {user} = this.state
     return (
       <div >
         <NavBar handleLogout={handleLogout}/>
         <Switch> 
         <Route exact path='/'  render={ ()=> <Home/>}/>
-        <Route path='/projects'  render={ ()=> localStorage.token ? <MyProjects/> : <Redirect to='/login'/>}/>
-        <Route path='/new'  render={ ()=> localStorage.token ? <NewProjectForm/> : <Redirect to='/login'/>}/>
-        <Route path='/login'  render={ ()=> !localStorage.token ? <LoginForm handleSubmit={handleLogin} handleChange={handleChange}/> : <Redirect to='/profile'/>}/>
-        <Route path='/signup' render={() => !localStorage.token ? <SignUpForm handleSubmit={handleLogin} handleChange={handleChange}/> : <Redirect to='/profile'/>} /> 
-         <Route path='/profile' render={() => localStorage.token  ? <Profile user={user}/> : <Redirect to='/login'/>} /> 
+        <Route exact path='/projects'  render={props => localStorage.token ? <MyProjects  user={user}/> : <Redirect push to='/login'/>}/>
+        <Route path='/new'  render={()=> localStorage.token ? <NewProjectForm  user={user} createProject={this.createProject}/> : <Redirect push  to='/login'/>}/>
+        <Route path='/login'  render={ ()=> !localStorage.token ? <LoginForm handleSubmit={handleLogin} handleChange={handleChange}/> : <Redirect push to='/profile'/>}/>
+        <Route path='/signup' render={() => !localStorage.token ? <SignUpForm  handleSubmit={handleLogin} handleChange={handleChange}/> : <Redirect push to='/profile'/>} /> 
+         <Route path='/profile' render={() => localStorage.token  ? <Profile   user={user}/> : <Redirect to='/login'/>} /> 
       </Switch>
         
        
@@ -97,4 +131,4 @@ handleLogout = () => {
   
 }
 
-export default App;
+export default withRouter(App)
