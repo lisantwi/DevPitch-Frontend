@@ -54,7 +54,10 @@ class ProjectDescription extends React.Component{
                         <Form.Input onChange={handleChange} name='end_date' type='date' placeholder='Project Start Date'/>
                     </Form.Group>
                     <Form.Dropdown 
-                        fluid multiple selection
+                        fluid
+                        multiple
+                        search
+                        selection
                         name='languages'
                         label='Language'
                         options={this.state.languages}

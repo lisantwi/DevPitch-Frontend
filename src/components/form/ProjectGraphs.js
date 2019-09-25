@@ -1,7 +1,11 @@
-import React, { isValidElement } from 'react'
+import React from 'react'
 import styled from 'styled-components'
+import { Link} from "react-router-dom";
 import {Form, Button, Select} from 'semantic-ui-react'
 import html2canvas from 'html2canvas';
+
+
+
 
 import Draggable from 'react-draggable'; // The default
 
@@ -26,11 +30,7 @@ const FormStyling = styled.div`
 		padding-left: 20px;
 		padding-right:20px
 	}
-	.title{
-		text-align: center
-		padding-top: 30px;
-	}
-
+	
 	.addButton{
 		margin-left: 0 auto;
 	}
@@ -49,6 +49,17 @@ const FormStyling = styled.div`
 		padding-left:30px
 		display:inline
 		color:red
+	}
+
+	.title{
+		text-align:center;
+	}
+	.title h1{
+		padding-top:30px;
+	}
+
+	.buttonDiv{
+		cursor: pointer;
 	}
 
 	
@@ -95,7 +106,7 @@ class ProjectGraphs extends React.Component{
 	}
 
 	createNode = (event, val) => {
-		event.preventDefault()
+
 		let node = null
 		node = new DefaultNodeModel(event.target.modelName.value, 'peru')
 		let i = 1
@@ -116,16 +127,27 @@ class ProjectGraphs extends React.Component{
 
 	}
 
+	returnDiagram= () =>{
+		return <DiagramWidget className='srd-demo-canvas' diagramEngine={this.engine} />
+	}
+
 	
 
 	saveImg = () => {	
-			html2canvas(document.querySelector(".diagram-layer")).then(canvas => {
-				let imgUrl = canvas.toDataURL("image/png")
+		let imgUrl = ''
+		let graph = document.querySelector(".diagram-layer")
+			html2canvas(graph).then(canvas => {
+				debugger
+				imgUrl = canvas.toDataURL("image/png")
 				this.setState({
 					saved: imgUrl
 				})
 			});
-			this.props.addImg(this.state.saved)
+			this.props.addImg(this.state.saved, this.props.project)
+			
+
+	
+			// this.props.addImg(this.state.saved, this.props.project)
 }
 	
 duplicateDiv = () => {
@@ -156,6 +178,7 @@ handleSelectChange = (e) => {
 
 
 	render() {
+		const {project} = this.props
 		const options = [{key: 'One-to-Many', value: 'One-to-Many', text:'One-to-Many' },{key: 'Many-to-Many', value: 'Many-to-Many', text:'Many-to-Many'},{key: 'One-to-One', value: 'One-to-One', text: 'One-to-One'}] 
 		// const options = this.state.nodes.map(v => ({
 		// 	label: v.name,
@@ -164,13 +187,31 @@ handleSelectChange = (e) => {
 		return (
 			
 			<FormStyling>
- 		
+				<Link to={`/projects/${project.id}`}>
+				<div className='buttonDiv'>
+					<button className="ui active button">
+					 <i className="arrow left icon"></i>
+					Return to Project
+				</button>
+					</div>
+				</Link>
+				
+					 
 			 <div className="title">
-			<div >
-			<h1 >Define Your Data Models</h1>
-	
-	<Button onClick= {this.handleClick}>Add A New Model</Button>
-			</div>
+			 <h1 >	Define Your Data Models</h1>
+			 <Button onClick= {this.handleClick}>Add A New Model</Button>
+				 <div className='ui two column centered grid'>
+					
+					 </div>
+		
+					
+				 
+			
+			
+			<br/>
+		
+
+		
 			
 				<div 
 				onClick={this.onClickNode}
@@ -199,7 +240,10 @@ handleSelectChange = (e) => {
 				>
 					<br/>
 						<br/>
-					<DiagramWidget className='srd-demo-canvas' diagramEngine={this.engine} />
+
+						{this.returnDiagram()}
+
+			
 
 				
 			
@@ -254,16 +298,18 @@ handleSelectChange = (e) => {
 						</div>
 				
 				<br/><br/>
-						<Button onClick={()=>this.saveImg(this.engine)}>Save &amp; Continue</Button>
+						<Button onClick={this.saveImg}>Save &amp; Continue</Button>
 					
 						
 				{/* <Select
 			options={options}
 			/> */}
 					</div>
+					</div>
+
 			
 	
-				</div> 
+			
 				</FormStyling>
 	
              

@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Card } from 'semantic-ui-react'
+import { Link } from 'react-router-dom'
 
 
 
@@ -10,29 +10,22 @@ const CardStyles = styled.div`
 `
 
 
-class MyProjects extends React.Component{
+class ProjectCard extends React.Component{
     constructor(props){
         super(props)
-        this.state = {
-            projects: []
-        }
+
     }
 
 
 
     render(){
-        debugger
+        const {project, onSelectedProject} = this.props
         return(
         <CardStyles>
-            <div className= 'ui grid'>
-                  <h2>My Projects</h2>
-                  <br/><br/>
-                {this.props.user.projects.map(p=>{
-                    debugger
-                    return <div className='four wide column'>
+            <div className='four wide column'>
                         <div className="ui card">
   <div className="content">
-    <div className="header">Project Name: {p.name}</div>
+    <div className="header">Project Name: {project.name}</div>
   </div>
   <div className="content">
     <h4 className="ui sub header">Details</h4>
@@ -40,8 +33,7 @@ class MyProjects extends React.Component{
       <div className="event">
         <div className="content">
           <div className="summary">
-            <a>Languages: </a><ul>{p.languages? p.languages.map(l=> {
-                debugger
+            <a>Languages: </a><ul>{project.languages? project.languages.map(l=> {
                 return <li>{l.name}</li>
             }) : null
             }</ul>
@@ -51,29 +43,30 @@ class MyProjects extends React.Component{
       <div className="event">
         <div className="content">
           <div className="summary">
-             <a>Start Date:</a> {p.start_date}
+             <a>Start Date:</a> {project.start_date}
           </div>
         </div>
       </div>
       <div className="event">
         <div className="content">
           <div className="summary">
-             <a>End Date:</a> {p.end_date}
+             <a>End Date:</a> {project.end_date}
           </div>
         </div>
       </div>
     </div>
   </div>
   <div className="extra content">
-    <button className="ui button">View Project</button>
+      <Link to={`/projects/${project.id}`}>
+        <button onClick={()=> onSelectedProject(project)} className="ui button">View Project</button>
+      </Link>
+   
   </div>
-</div>
-                    </div>
-                })  }
-            </div>
+  </div>
+  </div>
             </CardStyles>
         )
     }
 }
 
-export default MyProjects
+export default ProjectCard

@@ -1,7 +1,7 @@
 import React from 'react'
-import ProjectDescription from './form/ProjectDescription'
-import ProjectGraphs from './form/ProjectGraphs'
-import ProjectDetails from './form/ProjectDetails'
+import ProjectDescription from './ProjectDescription'
+import ProjectGraphs from './ProjectGraphs'
+
 import {
 	withRouter
 } from 'react-router-dom';
@@ -49,28 +49,7 @@ class NewProjectForm extends React.Component{
         this.props.history.push('/projects')
     }
 
-    addImg = (src) => {
-        const {currentProject} = this.state
-        let data = {
-            project_id: currentProject.id,
-            src: src
 
-        }
-        fetch('http://localhost:3000/api/v1/add_image', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${localStorage.getItem('token')}`
-            },
-            body: JSON.stringify(data)
-        }).then(resp => resp.json())
-        .then(data => {
-            this.setState({
-             currentProject: data
-            })
-        })
-
-    }
 
     handleChange = (e) => {
         debugger
@@ -101,8 +80,6 @@ class NewProjectForm extends React.Component{
                 return <ProjectDescription handleChange={handleChange} addLanguages={addLanguages} continueForm={continueForm} />
             case 2:
                 return <ProjectGraphs addImg={addImg} currentProject={this.state.currentProject} continueForm={continueForm}/>
-            case 3:
-                return <ProjectDetails continueForm={continueForm}/>
         }
     }
 
