@@ -96,6 +96,16 @@ addImg = (src, project) => {
 
 }
 
+updateLocalStorage = (data) => {
+  debugger
+  let user = JSON.parse(localStorage.getItem('user'))
+  let userCopy = {...user}
+  userCopy.projects.push(data)
+  localStorage.setItem('user', JSON.stringify(userCopy))
+  this.props.history.push('/projects')
+  
+}
+
 
 fetchUserInfo = () => {
   if (localStorage.getItem('token') !== null
@@ -152,7 +162,7 @@ handleLogout = () => {
 
 }
   render(){
-    const {handleChange, handleLogin, handleLogout, onSelectedProject} = this
+    const {handleChange, handleLogin, handleLogout, onSelectedProject, updateLocalStorage} = this
     const {selectedProject} = this.state
     const user = JSON.parse(localStorage.getItem('user'))
     return (
@@ -172,7 +182,7 @@ handleLogout = () => {
          
           return projectFound ? <ProjectDetails project={projectFound} /> : <Home/>
         }}/>
-        <Route path='/new'  render={()=> localStorage.token ? <NewProjectForm  user={user} createProject={this.createProject}/> : <Redirect push  to='/login'/>}/>
+        <Route path='/new'  render={()=> localStorage.token ? <NewProjectForm  updateLocalStorage={updateLocalStorage}user={user} createProject={this.createProject}/> : <Redirect push  to='/login'/>}/>
         <Route path='/login'  render={ ()=> !localStorage.token ? <LoginForm handleSubmit={handleLogin} handleChange={handleChange}/> : <Redirect push to='/profile'/>}/>
         <Route path='/signup' render={() => !localStorage.token ? <SignUpForm  handleSubmit={handleLogin} handleChange={handleChange}/> : <Redirect push to='/profile'/>} /> 
          <Route path='/profile' render={() => localStorage.token  ? <Profile   user={user}/> : <Redirect to='/login'/>} /> 

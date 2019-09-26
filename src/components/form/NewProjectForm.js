@@ -42,17 +42,15 @@ class NewProjectForm extends React.Component{
             body: JSON.stringify(data)
         }).then(resp => resp.json())
         .then(data => {
-            this.setState({
-             currentProject: data,
+            this.props.updateLocalStorage(data)
             })
-        })
-        this.props.history.push('/projects')
+       
+       
     }
 
 
 
     handleChange = (e) => {
-        debugger
         this.setState({
             [e.target.name]: e.target.value
         })
