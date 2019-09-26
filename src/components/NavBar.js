@@ -54,7 +54,7 @@ class NavBar extends React.Component{
                     {!localStorage.token ? <li><a href='/login' className="nav-link">Login</a></li> : null}
                     {localStorage.token ? <li><a href='/projects' className="nav-link">My Projects</a></li> : null}
                     <li><a href="/new" className="nav-link">Create A New Project</a></li>
-                    {localStorage.token ? <li onClick={handleLogout}><a href='/' className="nav-link">Logout</a></li> : null}
+                    { <li onClick={handleLogout}><a href='/' className="nav-link">Logout</a></li> }
                 </ul>
             </div>
             </Nav>

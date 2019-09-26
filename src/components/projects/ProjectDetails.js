@@ -1,7 +1,8 @@
 import React, { Fragment } from 'react'
 import styled from 'styled-components'
-import {Button} from 'semantic-ui-react'
+import {Button,Grid} from 'semantic-ui-react'
 import { Link} from "react-router-dom";
+import DiagramCard from './DiagramCard';
 
 
 
@@ -82,15 +83,25 @@ class ProjectDetails extends React.Component{
               </div>
             </div>
           </div>
-          <div className='tasks'>  <h3>Tasks<i className="fa fa-plus-circle"></i></h3></div>
+          <div className='tasks'>  <h3>Tasks<i className="fa fa-plus-circle"></i></h3>
+          You have 0 tasks. Add some tasks to track your project progress.
+          </div>
             <hr/>
           <div className='Diagrams'>  <h3>Images</h3></div>
-            <h5>You currently have 0 diagrams</h5>
+             <h5>You currently have {project.images.length} diagrams</h5>
             <Link to={`/projects/${project.id}/diagrammer`}>
             <Button>Add a new diagram</Button>
             </Link>
 
-          
+        
+
+          <Grid columns={project.images.length} divided>
+              {project.images.map(img => {
+                  return <DiagramCard img={img} key={img.id}/>
+              })}
+            
+            </Grid>
+     
           
           
           <div className="container pen"><div className="row">

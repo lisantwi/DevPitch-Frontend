@@ -77,7 +77,6 @@ class ProjectGraphs extends React.Component{
 			hidden: true,
 			nodes: {},
 			fields: {},
-			engine: '',
 			saved: '',
 			relationship:''
 		}
@@ -134,16 +133,18 @@ class ProjectGraphs extends React.Component{
 	
 
 	saveImg = () => {	
-		let imgUrl = ''
+		let imgUrl 
 		let graph = document.querySelector(".diagram-layer")
 			html2canvas(graph).then(canvas => {
-				debugger
 				imgUrl = canvas.toDataURL("image/png")
-				this.setState({
-					saved: imgUrl
-				})
+				this.props.addImg(imgUrl, this.props.project)
 			});
-			this.props.addImg(this.state.saved, this.props.project)
+
+
+			
+	
+	
+		
 			
 
 	
@@ -298,7 +299,10 @@ handleSelectChange = (e) => {
 						</div>
 				
 				<br/><br/>
-						<Button onClick={this.saveImg}>Save &amp; Continue</Button>
+
+				<Button onClick={this.saveImg}>Save &amp; Return to Project</Button>
+		
+						
 					
 						
 				{/* <Select

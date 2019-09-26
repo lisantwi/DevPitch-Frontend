@@ -11,10 +11,6 @@ const CardStyles = styled.div`
 
 
 class ProjectCard extends React.Component{
-    constructor(props){
-        super(props)
-
-    }
 
 
 
@@ -33,8 +29,8 @@ class ProjectCard extends React.Component{
       <div className="event">
         <div className="content">
           <div className="summary">
-            <a>Languages: </a><ul>{project.languages? project.languages.map(l=> {
-                return <li>{l.name}</li>
+           Languages: <ul>{project.languages? project.languages.map(l=> {
+                return  <li key={l.id}>{l.name}</li>
             }) : null
             }</ul>
           </div>

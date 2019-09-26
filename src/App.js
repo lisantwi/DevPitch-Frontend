@@ -68,8 +68,8 @@ handleLogin = (e, eType) => {
 }
 
 addImg = (src, project) => {
-
   let user = JSON.parse(localStorage.getItem('user'))
+  let userCopy = {...user}
   let data = {
       project_id: project.id,
       src: src
@@ -84,9 +84,14 @@ addImg = (src, project) => {
       body: JSON.stringify(data)
   }).then(resp => resp.json())
   .then(data => {
-      let userCopy = {...user}
-      // let newUser = userCopy.projects.filter(p => p.id !== project.id)
-      // let userData = newUser.push(data)
+    userCopy.projects.forEach((p, index) => {
+    
+      if(p.id === data.id){
+        userCopy.projects[index] = data;
+      }
+    })
+
+      localStorage.setItem('user', JSON.stringify(userCopy))
   })
 
 }
