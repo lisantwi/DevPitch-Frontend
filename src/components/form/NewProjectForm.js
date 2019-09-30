@@ -64,12 +64,7 @@ class NewProjectForm extends React.Component{
 
  }
 
-    movePage = () => {
-        const {stage} = this.state
-        this.setState({
-            stage: stage+= 1
-           })
-    }
+   
 
     renderForm = () => {
         const {continueForm, handleChange, addImg, addLanguages} = this

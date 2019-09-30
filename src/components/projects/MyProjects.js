@@ -21,13 +21,13 @@ class MyProjects extends React.Component{
 
 
     render(){
-      const {user, onSelectedProject} = this.props
+      const {user, onSelectedProject, deleteProject} = this.props
         return(
         <CardStyles>
             <div className= 'ui grid'>
                   <h2>My Projects</h2>
                   <br/><br/>
-                {user.projects.map(p=> <ProjectCard onSelectedProject={onSelectedProject} key={p.id} project={p}/>)}
+                {user.projects.map(p=> <ProjectCard deleteProject={deleteProject} onSelectedProject={onSelectedProject} key={p.id} project={p}/>)}
             </div>    
         
         </CardStyles>

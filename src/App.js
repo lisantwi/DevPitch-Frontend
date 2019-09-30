@@ -11,6 +11,7 @@ import NewProjectForm from './components/form/NewProjectForm'
 import ProjectGraphs from './components/form/ProjectGraphs'
 
 
+
 import './App.css';
 
 
@@ -63,8 +64,90 @@ handleLogin = (e, eType) => {
       }
       this.props.history.push('/profile')
   })
-  
+}
 
+editTask= (data) => {
+  let user = JSON.parse(localStorage.getItem('user'))
+  let userCopy = {...user}
+  fetch(`http://localhost:3000/api/v1/tasks/${data.task_id}`, {
+      method: 'PATCH',
+      headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify(data)
+  }).then(resp => resp.json())
+  .then(data => {
+    userCopy.projects.forEach((p, index) => {
+    
+      if(p.id === data.id){
+        userCopy.projects[index] = data;
+      }
+    })
+    
+     localStorage.setItem('user', JSON.stringify(userCopy))
+     let user = JSON.parse(localStorage.getItem('user'))
+     this.setState({
+       user: user
+     })
+      
+  })
+}
+
+deleteTask = (task) =>{
+  let user = JSON.parse(localStorage.getItem('user'))
+  let userCopy = {...user}
+  fetch(`http://localhost:3000/api/v1/tasks/${task.id}`,{
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    }
+  }).then(resp => resp.json())
+  .then(data => {
+    let foundProject = userCopy.projects.find(project => project.id === data.task.project_id)
+    let projectUpdated = foundProject.tasks.filter(task => task.id !== data.task.id)
+    foundProject.tasks = projectUpdated
+    userCopy.projects.forEach((p, index) => {
+      if(p.id === foundProject.id){
+        userCopy.projects[index] = foundProject;
+      }
+    })
+    localStorage.setItem('user', JSON.stringify(userCopy))
+    let user = JSON.parse(localStorage.getItem('user'))
+    this.setState({
+      user:user
+    })
+    
+
+    
+  })
+  alert('You have successfully deleted your task')
+}
+
+deleteProject = (project) => {
+  let user = JSON.parse(localStorage.getItem('user'))
+  let userCopy = {...user}
+  fetch(`http://localhost:3000/api/v1/projects/${project.id}`,{
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    }
+  }).then(resp => resp.json())
+  .then(data => {
+    let newProjects= userCopy.projects.filter(p => {
+      return p.id !== data.id 
+    })
+    userCopy.projects = newProjects
+    localStorage.setItem('user', JSON.stringify(userCopy))
+    let user = JSON.parse(localStorage.getItem('user'))
+    this.setState({
+      user:user
+    })
+    
+    
+
+    
+  })
 }
 
 addImg = (src, project) => {
@@ -92,12 +175,41 @@ addImg = (src, project) => {
     })
 
       localStorage.setItem('user', JSON.stringify(userCopy))
+      this.props.history.push(`/projects/${data.id}`)
+  })
+
+}
+
+editProject = (data) => {
+  let user = JSON.parse(localStorage.getItem('user'))
+  let userCopy = {...user}
+  fetch(`http://localhost:3000/api/v1/projects/${data.project_id}`, {
+      method: 'PATCH',
+      headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify(data)
+  }).then(resp => resp.json())
+  .then(data => {
+    userCopy.projects.forEach((p, index) => {
+    
+      if(p.id === data.id){
+        userCopy.projects[index] = data;
+      }
+    })
+    
+     localStorage.setItem('user', JSON.stringify(userCopy))
+     let user = JSON.parse(localStorage.getItem('user'))
+     this.setState({
+       user: user
+     })
+      
   })
 
 }
 
 updateLocalStorage = (data) => {
-  debugger
   let user = JSON.parse(localStorage.getItem('user'))
   let userCopy = {...user}
   userCopy.projects.push(data)
@@ -151,6 +263,33 @@ createProject = (description) => {
   
 }
 
+addTask = (data) => {
+  let user = JSON.parse(localStorage.getItem('user'))
+  let userCopy = {...user}
+  fetch(`http://localhost:3000/api/v1/add_task`, {
+      method: "POST",
+      headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify(data)
+  }).then(resp => resp.json())
+  .then(project =>{
+    userCopy.projects.forEach((p, index) => {
+      if(p.id === project.id){
+        userCopy.projects[index] = project;
+      }
+    })
+      localStorage.setItem('user', JSON.stringify(userCopy))
+      let user = JSON.parse(localStorage.getItem('user'))
+      this.setState({
+        user: user
+      })
+  })
+}
+
+
+
 
 
 
@@ -162,7 +301,7 @@ handleLogout = () => {
 
 }
   render(){
-    const {handleChange, handleLogin, handleLogout, onSelectedProject, updateLocalStorage} = this
+    const {handleChange, handleLogin, handleLogout, onSelectedProject, updateLocalStorage, addTask, deleteTask, editTask, deleteProject, editProject} = this
     const {selectedProject} = this.state
     const user = JSON.parse(localStorage.getItem('user'))
     return (
@@ -170,7 +309,7 @@ handleLogout = () => {
         <NavBar handleLogout={handleLogout}/>
         <Switch> 
         <Route exact path='/'  render={ ()=> <Home/>}/>
-        <Route exact path='/projects'  render={props => localStorage.token ? <MyProjects onSelectedProject={onSelectedProject} user={user}/> : <Redirect push to='/login'/>}/>
+        <Route exact path='/projects'  render={props => localStorage.token ? <MyProjects onSelectedProject={onSelectedProject} user={user} deleteProject={deleteProject}/> : <Redirect push to='/login'/>}/>
         <Route exact path='/projects/:id/diagrammer'  render={(props) =>{
           let projectId = parseInt(props.match.params.id)
           let project = user.projects.find(p => p.id === projectId)
@@ -180,7 +319,7 @@ handleLogout = () => {
           let projectId = parseInt(props.match.params.id)
           let projectFound = Object.entries(selectedProject).length === 0 ? user.projects.find(p => p.id === projectId) : selectedProject
          
-          return projectFound ? <ProjectDetails project={projectFound} /> : <Home/>
+          return projectFound ? <ProjectDetails deleteTask={deleteTask} project={projectFound} addTask={addTask} editTask={editTask} editProject={editProject} /> : <Home/>
         }}/>
         <Route path='/new'  render={()=> localStorage.token ? <NewProjectForm  updateLocalStorage={updateLocalStorage}user={user} createProject={this.createProject}/> : <Redirect push  to='/login'/>}/>
         <Route path='/login'  render={ ()=> !localStorage.token ? <LoginForm handleSubmit={handleLogin} handleChange={handleChange}/> : <Redirect push to='/profile'/>}/>

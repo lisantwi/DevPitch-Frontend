@@ -14,7 +14,7 @@ html, body, div, p, ul, li {
   }
   .nav {
     background: #000;
-    height: 60px; /* set same as height & line-height below */
+    height: 80px; /* set same as height & line-height below */
   }
   .nav li {
     display: inline-block;
@@ -53,8 +53,8 @@ class NavBar extends React.Component{
                     <li><a href='/' className="nav-link">Home</a></li>
                     {!localStorage.token ? <li><a href='/login' className="nav-link">Login</a></li> : null}
                     {localStorage.token ? <li><a href='/projects' className="nav-link">My Projects</a></li> : null}
-                    <li><a href="/new" className="nav-link">Create A New Project</a></li>
-                    { <li onClick={handleLogout}><a href='/' className="nav-link">Logout</a></li> }
+                   {localStorage.token?<li> <a href="/new" className="nav-link">Create A New Project</a></li> : null}
+                    <li onClick={handleLogout}>{localStorage.token? <a href='/' className="nav-link">Logout</a> : null }</li> 
                 </ul>
             </div>
             </Nav>

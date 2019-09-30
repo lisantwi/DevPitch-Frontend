@@ -48,10 +48,10 @@ class ProjectDescription extends React.Component{
                 <div className='formDiv'>
                     <h2>Tell us about your project</h2>
                     <Form onSubmit={continueForm}>
-                    <Form.Input onChange={handleChange} name='project_name' type='text' placeholder='Project Name'/>
-                    <Form.Group widths='equal'>
-                        <Form.Input onChange={handleChange} name='start_date' type='date' placeholder='Project Start Date'/>
-                        <Form.Input onChange={handleChange} name='end_date' type='date' placeholder='Project Start Date'/>
+                    <Form.Input  required={true} onChange={handleChange} name='project_name' type='text' placeholder='Project Name' />
+                    <Form.Group  widths='equal'>
+                        <Form.Input required={true} onChange={handleChange} name='start_date' type='date' placeholder='Project Start Date' required/>
+                        <Form.Input required={true} onChange={handleChange} name='end_date' type='date' placeholder='Project Start Date' required/>
                     </Form.Group>
                     <Form.Dropdown 
                         fluid
@@ -63,12 +63,13 @@ class ProjectDescription extends React.Component{
                         options={this.state.languages}
                         placeholder='Select the Languages for your project'
                         onChange={this.handleChangeSelect.bind(this)}
+                        required
                     />
                   
 
                     <TextArea name='description' onChange={handleChange}placeholder='What are you trying to build? How will it help achieve your goals future goals? Is this for practice or part of an assignment?' rows="15"/>
-                    <Button><div>Continue</div> </Button>
-                    <Button onClick={this.props.movePage} > Next Page</Button>
+                    <Button type='submit'><div>Submit</div> </Button>
+
                     </Form>
                    
                 </div>

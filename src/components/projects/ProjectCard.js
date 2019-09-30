@@ -7,21 +7,27 @@ import { Link } from 'react-router-dom'
 const CardStyles = styled.div`
     padding-top:40px;
 
+    .trashIcon{
+      text-align: right;
+      cursor: pointer;
+    }
+
 `
 
 
 class ProjectCard extends React.Component{
 
+  
 
 
     render(){
-        const {project, onSelectedProject} = this.props
+        const {project, onSelectedProject, deleteProject} = this.props
         return(
         <CardStyles>
             <div className='four wide column'>
                         <div className="ui card">
   <div className="content">
-    <div className="header">Project Name: {project.name}</div>
+    <div className="header">Project Name: {project.name}</div><div className='trashIcon'><i className="fa fa-trash fa-lg" aria-hidden="true" onClick={()=>deleteProject(project)}></i></div>
   </div>
   <div className="content">
     <h4 className="ui sub header">Details</h4>
