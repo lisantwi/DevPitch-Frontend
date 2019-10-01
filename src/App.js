@@ -180,6 +180,36 @@ addImg = (src, project) => {
 
 }
 
+markAsComplete = (task) => {
+  let val = !task.is_complete
+  let data = {is_complete: val}
+  let user = JSON.parse(localStorage.getItem('user'))
+  let userCopy = {...user}
+  fetch(`http://localhost:3000/api/v1/tasks/${task.id}`, {
+      method: 'PATCH',
+      headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify(data)
+  }).then(resp => resp.json())
+  .then(data => {
+    userCopy.projects.forEach((p, index) => {
+        debugger
+      if(p.id === data.id){
+        userCopy.projects[index] = data;
+      }
+    })
+    
+     localStorage.setItem('user', JSON.stringify(userCopy))
+     let user = JSON.parse(localStorage.getItem('user'))
+     this.setState({
+       user: user
+     })
+      
+  })
+}
+
 editProject = (data) => {
   let user = JSON.parse(localStorage.getItem('user'))
   let userCopy = {...user}
@@ -301,7 +331,7 @@ handleLogout = () => {
 
 }
   render(){
-    const {handleChange, handleLogin, handleLogout, onSelectedProject, updateLocalStorage, addTask, deleteTask, editTask, deleteProject, editProject} = this
+    const {handleChange, handleLogin, handleLogout, onSelectedProject, updateLocalStorage, addTask, deleteTask, editTask, deleteProject, editProject, markAsComplete} = this
     const {selectedProject} = this.state
     const user = JSON.parse(localStorage.getItem('user'))
     return (
@@ -319,7 +349,7 @@ handleLogout = () => {
           let projectId = parseInt(props.match.params.id)
           let projectFound = Object.entries(selectedProject).length === 0 ? user.projects.find(p => p.id === projectId) : selectedProject
          
-          return projectFound ? <ProjectDetails deleteTask={deleteTask} project={projectFound} addTask={addTask} editTask={editTask} editProject={editProject} /> : <Home/>
+          return projectFound ? <ProjectDetails deleteTask={deleteTask} project={projectFound} markAsComplete={markAsComplete} addTask={addTask} editTask={editTask} editProject={editProject} /> : <Home/>
         }}/>
         <Route path='/new'  render={()=> localStorage.token ? <NewProjectForm  updateLocalStorage={updateLocalStorage}user={user} createProject={this.createProject}/> : <Redirect push  to='/login'/>}/>
         <Route path='/login'  render={ ()=> !localStorage.token ? <LoginForm handleSubmit={handleLogin} handleChange={handleChange}/> : <Redirect push to='/profile'/>}/>

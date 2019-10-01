@@ -70,6 +70,19 @@ padding: 12px 0;
   padding-left:20px
 }
 
+.table{
+  padding:20px;
+}
+
+.taskComplete{
+  cursor: pointer;
+}
+
+.overdue{
+  color:red;
+  font-size: 12px
+}
+
 
 `
 
@@ -258,6 +271,8 @@ handleProjectEditSubmit = () => {
 
 
 }
+
+ 
  
 
 
@@ -265,6 +280,18 @@ handleProjectEditSubmit = () => {
 
 
     render(){
+      let today = new Date();
+      let dd = today.getDate();
+      let mm = today.getMonth()+1; //January is 0!
+      let yyyy = today.getFullYear();
+       if(dd<10){
+              dd='0'+dd
+          } 
+          if(mm<10){
+              mm='0'+mm
+          } 
+      
+      today = yyyy+'-'+mm+'-'+dd;
       const {handleClick, handleChange, handleSubmit,handleSelectChange, handleDelete, handleEdit, returnForm, handleProjectEdit, handleProjectEditSubmit} = this
       const {project_name, project_start_date, project_end_date, project_description} = this.state
       const options = [
@@ -272,7 +299,7 @@ handleProjectEditSubmit = () => {
         {key:'Medium', text: 'Medium', value: 'Medium'},
         {key:'Low', text: 'Low', value: 'low'}
       ]
-        const {project} = this.props
+        const {project, markAsComplete} = this.props
        
         return(
             <CardStyles>
@@ -331,14 +358,14 @@ handleProjectEditSubmit = () => {
             </div>
           </div>
           <div className='tasks'>  <h3>Tasks<i onClick={handleClick}className="fa fa-plus-circle"></i></h3>
-          You have {project.tasks.length} tasks. Add new tasks by clicking the '+' sign located next to 'Tasks'
-          <Table celled>
+          You have {project.tasks.length} task(s). Add new tasks by clicking the '+' sign located next to 'Tasks'
+          <Table className='table' celled>
             {project.tasks.length !== 0 ? <Table.Header>
       <Table.Row>
         <Table.HeaderCell>Task Name</Table.HeaderCell>
         <Table.HeaderCell>Due Date</Table.HeaderCell>
         <Table.HeaderCell>Priority</Table.HeaderCell>
-        <Table.HeaderCell>Status</Table.HeaderCell>
+        <Table.HeaderCell>Status </Table.HeaderCell>
         <Table.HeaderCell>Edit/Delete</Table.HeaderCell>
       </Table.Row>
     </Table.Header> : null}
@@ -346,11 +373,13 @@ handleProjectEditSubmit = () => {
 
     <Table.Body>
       {project.tasks.map(t => {
-        return <Table.Row > 
-          <Table.Cell>{t.name}<span key={t.id}></span> </Table.Cell>
-          <Table.Cell>{t.due_date}</Table.Cell>
+        const dueDate = new Date(t.due_date)
+        const todayDate = new Date()
+        return <Table.Row key={t.id} > 
+          <Table.Cell>{t.name}<span ></span> </Table.Cell>
+          <Table.Cell>{t.due_date} {dueDate < todayDate ? <p className='overdue'>overdue</p> : ''}</Table.Cell>
           <Table.Cell>{t.priority}</Table.Cell>
-          <Table.Cell>Incomplete</Table.Cell>
+          <Table.Cell>{t.is_complete ? 'Completed' : 'Incomplete'} <a className='taskComplete' onClick={()=>markAsComplete(t)}>{t.is_complete ? 'Mark as Incomplete' : 'Mark as Complete'}</a></Table.Cell>
           <Table.Cell><div className='icons'><i onClick={()=>handleEdit(t)} className="fa fa-edit fa-lg"></i><i onClick={()=>handleDelete(t) } className="fa fa-trash fa-lg"></i></div></Table.Cell>
         </Table.Row>
       })}
@@ -387,7 +416,7 @@ handleProjectEditSubmit = () => {
             name='due_date'
             onChange={handleChange}
             placeholder='Enter your Task Due Date'
-            max={project.end_date}
+            min={today}
             required
           />
           <Form.Field

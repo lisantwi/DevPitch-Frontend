@@ -42,6 +42,7 @@ class ProjectDescription extends React.Component{
     }
 
     render(){
+        
         const {handleChange, continueForm} = this.props
         return(
             <FormStyling>
