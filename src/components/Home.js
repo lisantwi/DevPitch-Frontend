@@ -28,7 +28,7 @@ const LoginDiv = styled.div`
     }
 `
 const Home = () =>{
-    const image = require('../images/homepage.svg')
+    const image = require('../images/image2.svg')
     return(
         <div className='container'>
             <LoginDiv>
@@ -36,8 +36,11 @@ const Home = () =>{
          <div className='title'>
      
          <div className='buttonDiv'>
-                <a href='/login'><Button >Log in </Button></a>
-                <a href='/signup'><Button >Sign Up </Button></a>
+             {!localStorage.token ?  <a href='/login'><Button >Log in </Button></a> : null }
+               {!localStorage.token ?  <a href='/signup'><Button >Sign Up </Button></a> : null}
+               {localStorage.token ?  <a href='/new'><Button >Create a New Project </Button></a> : null}
+               {localStorage.token ?  <a href='/projects'><Button >Go to My Projects </Button></a> : null}
+               
                 </div>
               
          </div>

@@ -24,6 +24,9 @@ const FormStyling = styled.div`
     .formDiv{
         padding: 50px;
 	}
+	.addForm{
+		padding:40px;
+	}
 	.hidden{
 		display: none;
 		margin-top:30px;
@@ -299,7 +302,7 @@ addOneMany = (e, div) => {
 				</div>
 				<div className={this.state.hidden ? 'hidden' : ''}>
 
-					<Form size='big'onSubmit={
+					<Form className='addForm' size='big'onSubmit={
 						e => {
 							let val = this.engine
 							 this.createNode(e,val)}

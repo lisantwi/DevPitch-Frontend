@@ -9,12 +9,8 @@ import DiagramCard from './DiagramCard';
 
 
 const CardStyles = styled.div`
-
-
-
 .pen,
 .pen a {
-font-family: "Open Sans", sans-serif;
 color: #black;
 font-style: normal;
 }
@@ -53,6 +49,10 @@ padding: 12px 0;
 .icons{
   cursor:pointer;
 
+}
+
+.imageDiv{
+  padding-left:20px;
 }
 
 .editing{
@@ -94,6 +94,10 @@ padding: 12px 0;
   font-weight: bold;
 }
 
+.isComplete{
+  font-size:15px
+}
+
 
 `
 
@@ -109,7 +113,8 @@ class ProjectDetails extends React.Component{
           priority: '',
           editing: false,
           formOn: false,
-          languages:[]
+          languages:[],
+          completed:false
         }
 
     }
@@ -202,7 +207,6 @@ class ProjectDetails extends React.Component{
       project_end_date: project.end_date,
       project_description: project.description
     })
-    console.log(`editing ${project.name}`)
     let value = this.state.formOn ? false : true
     this.setState({
       formOn: value
@@ -279,18 +283,32 @@ handleProjectEditSubmit = () => {
   this.setState({
     formOn: false
   })
-
-
 }
 
  
  
+checkComplete = () => {
+  const {project} = this.props
+  let val = project.tasks.every(t=> t.is_complete)
+  return val
+}
 
+handleComplete = (project) => {
+  const {editProject} = this.props
+  let val = project.is_complete
+  let data = {
+    project_id: project.id,
+    is_complete: !val
+  }
+  editProject(data)
+}
 
 
 
 
     render(){
+
+
       let today = new Date();
       let dd = today.getDate();
       let mm = today.getMonth()+1; //January is 0!
@@ -303,14 +321,14 @@ handleProjectEditSubmit = () => {
           } 
       
       today = yyyy+'-'+mm+'-'+dd;
-      const {handleClick, handleChange, handleSubmit,handleSelectChange, handleDelete, handleEdit, returnForm, handleProjectEdit, handleProjectEditSubmit} = this
+      const {handleClick, handleChange, handleSubmit,handleSelectChange, handleDelete, handleEdit, returnForm, handleProjectEdit, handleProjectEditSubmit, handleComplete} = this
       const {project_name, project_start_date, project_end_date, project_description} = this.state
       const options = [
         {key:'High', text: 'High', value: 'high'},
         {key:'Medium', text: 'Medium', value: 'Medium'},
         {key:'Low', text: 'Low', value: 'low'}
       ]
-        const {project, markAsComplete} = this.props
+        const {project, markAsComplete, handleDeleteDiagram} = this.props
        
         return(
             <CardStyles>
@@ -320,8 +338,9 @@ handleProjectEditSubmit = () => {
               <div className="col-sm-12">
                 <div className="page-header">
     
-                  <h1>Project Details<p className='icons'><i onClick={()=>handleProjectEdit(project)} className="fa fa-edit "></i></p></h1>
+                  <h1>Project Details<p className='isComplete'>{this.checkComplete() && !project.is_complete ? <a onClick={()=>handleComplete(project)}>Mark project as complete</a> : null}</p><p className='icons'><i onClick={()=>handleProjectEdit(project)} className="fa fa-edit "></i></p></h1>
                   <div className={this.state.formOn ? 'formOn' : ''}>
+                    {project.is_complete ? <p>Project Completed <i className="fa fa-check"></i></p> : null}
                   <p className="lead"><p className='pTitle'>Name:</p> {project.name}</p>
                   <p className="lead"><p className='pTitle'>Description:</p> {project.description}</p> 
                   <p className="lead"><p className='pTitle'>Project Start Date: </p>{project.start_date}</p>          
@@ -448,20 +467,25 @@ handleProjectEditSubmit = () => {
         
           </div>
             <hr/>
+            <div className='imageDiv'>
           <div className='Diagrams'>  <h3>Images</h3></div>
              <h5>You currently have {project.images.length} diagrams</h5>
             <Link to={`/projects/${project.id}/diagrammer`}>
-            <Button>Add a new diagram</Button>
+            <br/>
+            <Button>Add a new diagram</Button><br/><br/>
             </Link>
+            <br/>
 
         
-
-          <Grid columns={project.images.length} divided>
+    
+      <Grid columns={project.images.length} divided>
               {project.images.map(img => {
-                  return <DiagramCard img={img} key={img.id}/>
+                  return <DiagramCard handleDeleteDiagram={handleDeleteDiagram} img={img} key={img.id}/>
               })}
             
             </Grid>
+      </div>
+         
      
           
           

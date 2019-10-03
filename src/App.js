@@ -62,7 +62,6 @@ handleLogin = (e, eType) => {
       if(data.user){
         this.fetchUserInfo()
       }
-      this.props.history.push('/profile')
   })
 }
 
@@ -142,11 +141,7 @@ deleteProject = (project) => {
     let user = JSON.parse(localStorage.getItem('user'))
     this.setState({
       user:user
-    })
-    
-    
-
-    
+    })  
   })
 }
 
@@ -318,7 +313,31 @@ addTask = (data) => {
   })
 }
 
-
+handleDeleteDiagram = (img) => {
+  let user = JSON.parse(localStorage.getItem('user'))
+  let userCopy = {...user}
+  fetch(`http://localhost:3000/api/v1/images/${img.id}`,{
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    }
+  }).then(resp => resp.json())
+  .then(data => {
+    userCopy.projects.forEach((p, index) => {
+      if(p.id === data.id){
+        userCopy.projects[index] = data;
+      }
+    })
+      localStorage.setItem('user', JSON.stringify(userCopy))
+      let user = JSON.parse(localStorage.getItem('user'))
+      this.setState({
+        user: user
+      })
+      alert('You have successfully deleted your Diagram')
+  })
+    
+  
+}
 
 
 
@@ -328,10 +347,11 @@ handleLogout = () => {
     user: {}
   })
   localStorage.clear()
+  this.props.history.push('/')
 
 }
   render(){
-    const {handleChange, handleLogin, handleLogout, onSelectedProject, updateLocalStorage, addTask, deleteTask, editTask, deleteProject, editProject, markAsComplete} = this
+    const {handleChange, handleLogin, handleLogout, onSelectedProject, updateLocalStorage, addTask, deleteTask, editTask, deleteProject, editProject, markAsComplete, handleDeleteDiagram} = this
     const {selectedProject} = this.state
     const user = JSON.parse(localStorage.getItem('user'))
     return (
@@ -339,7 +359,7 @@ handleLogout = () => {
         <NavBar handleLogout={handleLogout}/>
         <Switch> 
         <Route exact path='/'  render={ ()=> <Home/>}/>
-        <Route exact path='/projects'  render={props => localStorage.token ? <MyProjects onSelectedProject={onSelectedProject} user={user} deleteProject={deleteProject}/> : <Redirect push to='/login'/>}/>
+        <Route exact path='/projects'  render={props => localStorage.token ? <MyProjects onSelectedProject={onSelectedProject} user={user}  deleteProject={deleteProject}/> : <Redirect push to='/login'/>}/>
         <Route exact path='/projects/:id/diagrammer'  render={(props) =>{
           let projectId = parseInt(props.match.params.id)
           let project = user.projects.find(p => p.id === projectId)
@@ -349,12 +369,12 @@ handleLogout = () => {
           let projectId = parseInt(props.match.params.id)
           let projectFound = Object.entries(selectedProject).length === 0 ? user.projects.find(p => p.id === projectId) : selectedProject
          
-          return projectFound ? <ProjectDetails deleteTask={deleteTask} project={projectFound} markAsComplete={markAsComplete} addTask={addTask} editTask={editTask} editProject={editProject} /> : <Home/>
+          return projectFound ? <ProjectDetails handleDeleteDiagram={handleDeleteDiagram} deleteTask={deleteTask} project={projectFound} markAsComplete={markAsComplete} addTask={addTask} editTask={editTask} editProject={editProject} /> : <Home/>
         }}/>
         <Route path='/new'  render={()=> localStorage.token ? <NewProjectForm  updateLocalStorage={updateLocalStorage}user={user} createProject={this.createProject}/> : <Redirect push  to='/login'/>}/>
-        <Route path='/login'  render={ ()=> !localStorage.token ? <LoginForm handleSubmit={handleLogin} handleChange={handleChange}/> : <Redirect push to='/profile'/>}/>
-        <Route path='/signup' render={() => !localStorage.token ? <SignUpForm  handleSubmit={handleLogin} handleChange={handleChange}/> : <Redirect push to='/profile'/>} /> 
-         <Route path='/profile' render={() => localStorage.token  ? <Profile   user={user}/> : <Redirect to='/login'/>} /> 
+        <Route path='/login'  render={ ()=> !localStorage.token ? <LoginForm handleSubmit={handleLogin} handleChange={handleChange}/> : <Redirect push to='/'/>}/>
+        <Route path='/signup' render={() => !localStorage.token ? <SignUpForm  handleSubmit={handleLogin} handleChange={handleChange}/> : <Redirect push to='/'/>} /> 
+         <Route path='/calendar' render={() => localStorage.token  ? <Profile   user={user}/> : <Redirect to='/login'/>} /> 
       </Switch>
         
        
