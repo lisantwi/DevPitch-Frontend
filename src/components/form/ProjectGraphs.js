@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Link} from "react-router-dom";
-import {Form, Button, Select} from 'semantic-ui-react'
+import {Form, Button, Grid} from 'semantic-ui-react'
 import html2canvas from 'html2canvas';
 
 
@@ -62,6 +62,18 @@ const FormStyling = styled.div`
 		cursor: pointer;
 	}
 
+	.divButt{
+		text-align:right;
+	}
+
+	.clearButton{
+		text-align: left;
+	}
+
+	.colorButtonDiv{
+		text-align:right;
+	}
+
 	
 
 `
@@ -78,7 +90,10 @@ class ProjectGraphs extends React.Component{
 			nodes: {},
 			fields: {},
 			saved: '',
-			relationship:''
+			relationship:'',
+			oneMany: ['Div'],
+			oneOne: ['Div'],
+			manyMany:['Div']
 		}
 
 	}
@@ -102,6 +117,14 @@ class ProjectGraphs extends React.Component{
 		})
 		// var data = JSON.parse(event.dataTransfer.getData('storm-diagram-node'));
 			
+	}
+
+	clearAll = () =>{
+		this.setState({
+			oneOne: [],
+			manyMany: [],
+			oneMany: []
+		})
 	}
 
 	createNode = (event, val) => {
@@ -166,6 +189,12 @@ duplicateDiv = () => {
 		  break;
 	  } 
 	  return div
+
+		
+
+	
+	
+
 }
 
 handleSelectChange = (e) => {
@@ -173,6 +202,25 @@ handleSelectChange = (e) => {
 		relationship: e.target.textContent
 	})
 }
+
+addOneMany = (e, div) => {
+    let cDivs = this.state.oneMany;
+    cDivs.push('newDiv')
+    this.setState({oneMany: cDivs })
+  }
+
+  addOneOne = (e, div) => {
+		let cDivs = this.state.oneOne;
+		cDivs.push('newDiv')
+		this.setState({oneOne: cDivs })
+	  }
+
+	  addManyMany = (e, div) => {
+			let cDivs = this.state.manyMany;
+			cDivs.push('newDiv')
+			this.setState({manyMany: cDivs })
+		  }
+		
 	
 
 
@@ -235,9 +283,9 @@ handleSelectChange = (e) => {
 						this.engine.getDiagramModel().addNode(node);
 						this.forceUpdate();
 					}}
-					onDragOver={event => {
+					
 				
-					}}
+			
 				>
 					<br/>
 						<br/>
@@ -286,13 +334,52 @@ handleSelectChange = (e) => {
 				
 				</div>
 				<div>
-						<label>Add Relationships</label>
-						<Select onChange={this.handleSelectChange} placeholder='Add your relationships' options={options} />
+						
 					
-		
 						<div >
-			
-							{this.state.relationship ? this.duplicateDiv() : null}
+
+							<div className='divButt'>
+							<Grid columns={3}>
+								<Grid.Column>
+									<div className='colorButtonDiv'>
+									<label>Add Relationships:     </label><br/>
+								{this.state.oneMany.map(div =>{
+							return <Draggable ><div className="ui yellow label">One-to-Many</div></Draggable>
+						})}
+
+					{this.state.oneOne.map(div =>{
+							return <Draggable ><div className="ui green label">One-to-One</div></Draggable>
+						})}
+
+{this.state.manyMany.map(div =>{
+							return <Draggable ><div className="ui red label">Many-to-Many</div></Draggable>
+						})}
+									</div>
+								
+								</Grid.Column>
+								<Grid.Column >
+								<Button primary size='mini' onClick={this.addOneMany}> Add One-to-One Relationship</Button><br/>
+						<Button primary size='mini' onClick={this.addOneOne}> Add One-to-Many Relationship</Button><br/>
+						<Button primary size='mini' onClick={this.addManyMany}> Add Many-to-Many Relationship</Button>
+						
+									
+								</Grid.Column>
+								<Grid.Column>
+								<div className='clearButton'>
+								<Button secondary size='small' onClick={this.clearAll}> Clear All</Button>	
+								</div>
+							
+								</Grid.Column>
+							</Grid>
+							</div>
+
+							
+					
+						
+	
+						{/* <Draggable ><div className="ui yellow label">One-to-One</div></Draggable>
+					    <Draggable><div className="ui green label">Many-to-Many</div></Draggable>	
+						<Draggable><div className="ui red label">One-to-Many</div></Draggable> */}
 				
 				
 					

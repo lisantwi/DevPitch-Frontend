@@ -11,6 +11,7 @@ import DiagramCard from './DiagramCard';
 const CardStyles = styled.div`
 
 
+
 .pen,
 .pen a {
 font-family: "Open Sans", sans-serif;
@@ -51,6 +52,7 @@ padding: 12px 0;
 }
 .icons{
   cursor:pointer;
+
 }
 
 .editing{
@@ -81,6 +83,15 @@ padding: 12px 0;
 .overdue{
   color:red;
   font-size: 12px
+}
+
+.page-header{
+  font-size:16px;
+}
+
+.pTitle{
+  color:red;
+  font-weight: bold;
 }
 
 
@@ -309,13 +320,13 @@ handleProjectEditSubmit = () => {
               <div className="col-sm-12">
                 <div className="page-header">
     
-                  <h1>Project Details<div className='icons'><i onClick={()=>handleProjectEdit(project)} className="fa fa-edit "></i></div></h1>
+                  <h1>Project Details<p className='icons'><i onClick={()=>handleProjectEdit(project)} className="fa fa-edit "></i></p></h1>
                   <div className={this.state.formOn ? 'formOn' : ''}>
-                  <p className="lead">Name: {project.name}</p>
-                  <p className="lead">Description: {project.description}</p> 
-                  <p className="lead">Project Start Date: {project.start_date}</p>          
-                  <p className="lead">Project End Date: {project.end_date}</p>   
-                  <p className="lead">I'm building this project with:</p> <ul>{project.languages.map(p =>{
+                  <p className="lead"><p className='pTitle'>Name:</p> {project.name}</p>
+                  <p className="lead"><p className='pTitle'>Description:</p> {project.description}</p> 
+                  <p className="lead"><p className='pTitle'>Project Start Date: </p>{project.start_date}</p>          
+                  <p className="lead"><p className='pTitle'>Project End Date:</p> {project.end_date}</p>   
+                  <p className="lead"><p className='pTitle'>I'm building this project with:</p></p> <ul>{project.languages.map(p =>{
                       return <li key={p.id}>{p.name}</li>
                   } )}</ul> 
                   </div>

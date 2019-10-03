@@ -12,6 +12,16 @@ const CardStyles = styled.div`
       cursor: pointer;
     }
 
+    .linkStatus{
+      color:red
+    }
+
+    .statusDiv{
+      font-size: 15px
+    }
+
+  
+
 `
 
 
@@ -30,7 +40,7 @@ class ProjectCard extends React.Component{
     <div className="header">Project Name: {project.name}</div><div className='trashIcon'><i className="fa fa-trash fa-lg" aria-hidden="true" onClick={()=>deleteProject(project)}></i></div>
   </div>
   <div className="content">
-    <h4 className="ui sub header">Details</h4>
+    <h4 className="ui sub header">Project Details</h4>
     <div className="ui small feed">
       <div className="event">
         <div className="content">
@@ -53,6 +63,9 @@ class ProjectCard extends React.Component{
         <div className="content">
           <div className="summary">
              <a>End Date:</a> {project.end_date}
+          </div>
+          <div className="summary">
+            <div className='statusDiv'><a className='linkStatus'>Status:</a> {project.is_complete ? 'Complete' : 'Incomplete'}</div> 
           </div>
         </div>
       </div>

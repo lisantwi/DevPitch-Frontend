@@ -49,10 +49,10 @@ class ProjectDescription extends React.Component{
                 <div className='formDiv'>
                     <h2>Tell us about your project</h2>
                     <Form onSubmit={continueForm}>
-                    <Form.Input  required={true} onChange={handleChange} name='project_name' type='text' placeholder='Project Name' />
+                    <Form.Input  required={true} onChange={handleChange} name='project_name' type='text' placeholder='Project Name' label='Project Name' />
                     <Form.Group  widths='equal'>
-                        <Form.Input required={true} onChange={handleChange} name='start_date' type='date' placeholder='Project Start Date' required/>
-                        <Form.Input required={true} onChange={handleChange} name='end_date' type='date' placeholder='Project Start Date' required/>
+                        <Form.Input required={true} onChange={handleChange} name='start_date' type='date' placeholder='Project Start Date' label='Project Start Date' required/>
+                        <Form.Input required={true} onChange={handleChange} name='end_date' type='date' placeholder='Project Start Date' label='Project End Date' required/>
                     </Form.Group>
                     <Form.Dropdown 
                         fluid
@@ -68,8 +68,8 @@ class ProjectDescription extends React.Component{
                     />
                   
 
-                    <TextArea name='description' onChange={handleChange}placeholder='What are you trying to build? How will it help achieve your goals future goals? Is this for practice or part of an assignment?' rows="15"/>
-                    <Button type='submit'><div>Submit</div> </Button>
+                    <TextArea name='description' label ='Project Description' onChange={handleChange}placeholder='What are you trying to build? How will it help achieve your goals future goals? Is this for practice or part of an assignment?' rows="15"/>
+                    <Button type='submit'><div>Create Project</div> </Button>
 
                     </Form>
                    
