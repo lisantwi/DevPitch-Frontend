@@ -14,7 +14,7 @@
     "dom-to-image": "^2.6.0",
     "font-awesome": "^4.7.0",
     "lodash": "^4.17.15",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "prop-types": "^15.7.2",
     "react": "^16.9.0",
     "react-big-calendar": "^0.22.1",
